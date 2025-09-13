@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Accueil - LSFB Dashboard</title>
+  <!-- Favicon -->
+  <link rel="icon" href="{{ url_for('static', path='images/favicon.jpeg') }}" type="image/x-icon">
+  <!-- Google Fonts pour Noto Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --primary-green: rgb(85, 171, 38);
+      --light-gray: #f8f9fa;
+    }
+    body {
+      font-family: 'Noto Sans', "Helvetica Neue", Helvetica, sans-serif;
+      background-color: var(--light-gray);
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-size: 18px;
+      opacity: 0;
+      animation: fadeIn 1s ease-in-out forwards;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Ligne en haut -->
+  <div class="bg-gradient-to-r from-green-600 to-green-500 text-white py-2 text-sm font-semibold text-center uppercase">
+    Langue des Signes Francophone de Belgique
+  </div>
+  <!-- Barre de navigation -->
+  <nav class="bg-white shadow-md py-3">
+    <div class="container mx-auto flex justify-between items-center px-4">
+      <a class="text-2xl font-extrabold text-green-600" href="/index.html">
+        Langue des signes, langue vivante
+      </a>
+      <div class="hidden md:flex space-x-6">
+        <a class="text-gray-700 font-semibold hover:text-green-600" href="/about.html">À Propos</a>
+        <a class="text-gray-700 font-semibold hover:text-green-600" href="/suggestions.html">Suggestions</a>
+        <a class="text-gray-700 font-semibold hover:text-green-600" href="/contact.html">Contact</a>
+      </div>
+    </div>
+  </nav>
+  <!-- Section principale -->
+  <div class="container-fluid h-full flex justify-center items-center">
+    <div class="bg-white shadow-lg rounded-lg p-8 flex items-center justify-between space-x-10">
+      <img src="{{ url_for('static', path='images/logo_lsfb.png') }}" alt="Logo LSFB" class="w-1/3 max-h-full object-contain rounded-lg shadow-md">
+      <div class="flex-1 ml-8 flex flex-col justify-center">
+        <h1 class="text-4xl font-extrabold text-green-600 mb-6">Bienvenue sur le Dashboard du LSFB</h1>
+        <p class="text-lg text-gray-600 mb-8 font-medium leading-relaxed">
+          Découvrez notre plateforme intuitive pour explorer les signes du LSFB. Naviguez dans nos données, visualisez des signes en 3D, et accédez à des statistiques détaillées.
+        </p>
+        <!-- Bouton pour accéder à la page LSFB -->
+        <a href="/lsfb.html" class="inline-block bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-600 text-white text-lg font-semibold py-3 px-8 rounded-full shadow-md transition duration-300 self-center">
+          Accéder à la plateforme LSFB
+        </a>
+      </div>
+    </div>
+  </div>
+  <!-- Pied de page -->
+  <footer class="bg-white py-4 text-center text-sm text-gray-600 shadow-inner">
+    <p>&copy; 2025 LSFB. Tous droits réservés.</p>
+  </footer>
+</body>
+</html>

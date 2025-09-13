@@ -1,0 +1,31 @@
+# Ignore les fichiers de configuration spécifiques à l'environnement
+.env
+.env.local
+.env.*.local
+
+# Ignore les dossiers de dépendances
+node_modules/
+vendor/
+
+# Ignore les fichiers de log
+*.log
+
+# Ignore les fichiers de build
+dist/
+build/
+
+# Ignore les fichiers temporaires
+tmp/
+temp/
+*.tmp
+*.swp
+
+# Ignore les fichiers de configuration de l'éditeur
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore les fichiers de système d'exploitation
+.DS_Store
+Thumbs.db

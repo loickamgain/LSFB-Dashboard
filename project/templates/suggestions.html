@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Suggestions</title>
+  <!-- Favicon -->
+  <link rel="icon" href="{{ url_for('static', path='images/favicon.jpeg') }}" type="image/x-icon">
+  <!-- Google Fonts pour Noto Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --primary-green: rgb(85, 171, 38);
+      --light-gray: #f8f9fa;
+    }
+    body {
+      font-family: 'Noto Sans', "Helvetica Neue", Helvetica, sans-serif;
+      background-color: var(--light-gray);
+      margin: 0;
+      padding: 0;
+      font-size: 18px;
+      height: 50vh;
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+</head>
+<body>
+  <!-- Ligne en haut -->
+  <div class="bg-green-600 text-white text-center py-3 text-sm font-semibold uppercase">
+    Langue des Signes Francophone de Belgique
+  </div>
+  <!-- Barre de navigation -->
+  <nav class="bg-white shadow-md py-3">
+    <div class="container mx-auto flex justify-between items-center px-4">
+      <a class="text-2xl font-extrabold text-green-600" href="/index.html">LSFB Dashboard</a>
+      <div class="hidden md:flex space-x-6">
+        <a class="text-gray-700 font-semibold hover:text-green-600" href="/about.html">À Propos</a>
+        <a class="text-gray-700 font-semibold hover:text-green-600" href="/suggestions.html">Suggestions</a>
+        <a class="text-gray-700 font-semibold hover:text-green-600" href="/contact.html">Contact</a>
+      </div>
+    </div>
+  </nav>
+  <!-- Section principale -->
+  <div class="container mx-auto m-[20px]">
+    <div class="bg-white shadow-lg rounded-lg p-[50px]">
+      <h2 class="text-3xl font-bold text-green-600 mb-6">Envoyez-nous vos suggestions</h2>
+      <p>Merci de remplir ce formulaire pour nous faire part de vos suggestions ou signaler un problème. Nous vous répondrons dans les plus brefs délais.</p>
+      <!-- Formulaire -->
+      <form action="confirmation_suggestion.html" method="POST" class="space-y-6 mt-6">
+        <div class="space-y-2">
+          <label for="nom" class="font-semibold">Nom</label>
+          <input type="text" class="w-full p-3 border border-gray-300 rounded-md focus:ring-green-600 focus:outline-none" id="nom" name="nom" required>
+        </div>
+        <div class="space-y-2">
+          <label for="prenom" class="font-semibold">Prénom</label>
+          <input type="text" class="w-full p-3 border border-gray-300 rounded-md focus:ring-green-600 focus:outline-none" id="prenom" name="prenom" required>
+        </div>
+        <div class="space-y-2">
+          <label for="email" class="font-semibold">Email</label>
+          <input type="email" class="w-full p-3 border border-gray-300 rounded-md focus:ring-green-600 focus:outline-none" id="email" name="email" required>
+        </div>
+        <div class="space-y-2">
+          <label for="telephone" class="font-semibold">Numéro de téléphone</label>
+          <input type="tel" class="w-full p-3 border border-gray-300 rounded-md focus:ring-green-600 focus:outline-none" id="telephone" name="telephone" required>
+        </div>
+        <div class="space-y-2">
+          <label for="type_contact" class="font-semibold">Type de contact</label>
+          <select class="w-full p-3 border border-gray-300 rounded-md focus:ring-green-600 focus:outline-none" id="type_contact" name="type_contact" required>
+            <option value="signalement">Signalement d'un problème</option>
+            <option value="suggestion">Suggestion</option>
+          </select>
+        </div>
+        <div class="space-y-2">
+          <label for="message" class="font-semibold">Message</label>
+          <textarea class="w-full p-3 border border-gray-300 rounded-md focus:ring-green-600 focus:outline-none" id="message" name="message" maxlength="3000" required></textarea>
+          <div class="text-right text-sm text-gray-500" id="charCount">0 / 3000 caractères</div>
+        </div>
+        <button type="submit" class="w-full py-3 bg-green-600 text-white text-lg font-semibold rounded-md hover:bg-blue-200 transition duration-300">
+          Envoyer
+        </button>
+      </form>
+      <!-- Bouton retour à l'accueil corrigé -->
+      <div class="text-left mt-4">
+        <a href="/index.html" class="inline-block bg-green-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-700 transition">
+          Retour à l'accueil
+        </a>
+      </div>
+    </div>
+  </div>
+  <!-- Script pour le compteur de caractères -->
+  <script>
+    const messageField = document.getElementById('message');
+    const charCount = document.getElementById('charCount');
+    messageField.addEventListener('input', function() {
+      const currentLength = messageField.value.length;
+      charCount.textContent = `${currentLength} / 3000 caractères`;
+    });
+  </script>
+  <!-- Pied de page -->
+  <footer class="bg-white py-4 text-center text-sm text-gray-600 shadow-inner">
+    <p>&copy; 2025 LSFB. Tous droits réservés.</p>
+  </footer>
+</body>
+</html>

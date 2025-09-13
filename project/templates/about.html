@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>À propos</title>
+  <!-- Favicon -->
+  <link rel="icon" href="D:/Etudes/Bachelier Informatique Unamur/Bloc 3/Projet/lsfb_projet/pics/favicon.jpeg" type="image/x-icon">
+  <!-- Google Fonts : Noto Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Inclusion de Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Styles personnalisés pour l'animation de chargement & font-family -->
+  <style>
+    body {
+      font-family: 'Noto Sans', "Helvetica Neue", Helvetica, sans-serif;
+      opacity: 0; /* Animation fadeIn */
+      animation: fadeIn 1s forwards;
+    }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Bande en haut de page -->
+  <div class="bg-green-600 text-white text-center py-3 text-sm font-semibold uppercase">
+    Langue des Signes Francophone de Belgique
+  </div>
+
+  <!-- Barre de navigation -->
+  <nav class="bg-white shadow-md">
+    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="/index.html" class="text-2xl font-extrabold text-green-600 hover:text-green-700 transition">
+        LSFB Dashboard
+      </a>
+      <!-- Menu principal (version bureau) -->
+      <div class="hidden md:flex space-x-6">
+        <a class="text-gray-700 font-semibold hover:text-green-600 transition" href="/lsfb.html">LSFB</a>
+        <a class="text-gray-700 font-semibold hover:text-green-600 transition" href="/suggestions.html">Suggestions</a>
+        <a class="text-gray-700 font-semibold hover:text-green-600 transition" href="/contact.html">Contact</a>
+      </div>
+      <!-- Bouton hamburger (version mobile) -->
+      <button class="block md:hidden text-gray-700" id="menuToggle">
+        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+          <path d="M4 5h16M4 12h16M4 19h16"></path>
+        </svg>
+      </button>
+    </div>
+    <!-- Menu en version mobile (caché par défaut) -->
+    <div class="hidden md:hidden bg-white border-t border-gray-200" id="mobileMenu">
+      <div class="px-4 py-2">
+        <a class="block py-2 text-gray-700 font-semibold hover:text-green-600 transition" href="/lsfb.html">LSFB</a>
+        <a class="block py-2 text-gray-700 font-semibold hover:text-green-600 transition" href="/suggestions.html">Suggestions</a>
+        <a class="block py-2 text-gray-700 font-semibold hover:text-green-600 transition" href="/contact.html">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Conteneur principal -->
+  <div class="mx-auto" style="max-width: 1200px;">
+    <div class="bg-white rounded-lg shadow-xl hover:-translate-y-1 transform transition" style="padding: 50px; margin: 20px;">
+      <h2 class="text-3xl md:text-4xl font-extrabold text-green-600 mb-6">
+        À propos de notre projet LSFB
+      </h2>
+      <p class="text-justify text-gray-700 leading-relaxed mb-6">
+        Bienvenue sur le site dédié au projet LSFB (Langue des Signes Française de Belgique), une initiative ambitieuse visant à explorer, analyser et préserver la langue des signes à travers une vaste collection de vidéos et d'annotations. Ce projet met à disposition des chercheurs, linguistes et toute personne intéressée des outils permettant d'interagir avec une base de données riche et diversifiée de signes, d'expressions et de gestes en Langue des Signes.
+      </p>
+      <h3 class="text-2xl font-semibold text-green-600 mb-4">Qui sommes-nous ?</h3>
+      <p class="text-justify text-gray-700 leading-relaxed mb-6">
+        Le projet LSFB a été conçu par une équipe de chercheurs et d’étudiants en informatique, spécialisés dans l’analyse de données multimodales, les systèmes de bases de données et le traitement de la langue des signes. Nous sommes passionnés par la linguistique et la technologie, et notre objectif est de rendre la recherche sur la Langue des Signes accessible et interactive.
+      </p>
+      <h3 class="text-2xl font-semibold text-green-600 mb-4">Ce que nous faisons</h3>
+      <p class="text-justify text-gray-700 leading-relaxed mb-6">
+        Nous mettons à disposition une base de données détaillée et structurée qui contient plus de 120 000 clips vidéos d'expressions en Langue des Signes. Ces vidéos sont accompagnées d'annotations précises, permettant aux utilisateurs d'analyser les signes, de visualiser des segments vidéos, et d'explorer les gestes à travers des squelettes 3D basés sur la technologie MediaPipe.
+      </p>
+      <h3 class="text-2xl font-semibold text-green-600 mb-4">Notre mission</h3>
+      <p class="text-justify text-gray-700 leading-relaxed mb-6">
+        L'objectif principal de notre projet est de fournir une plateforme facile à utiliser pour les chercheurs, linguistes et étudiants, afin qu'ils puissent explorer en profondeur la Langue des Signes. Grâce à un ensemble d'outils analytiques, nous offrons des statistiques détaillées et des visualisations 3D pour aider à mieux comprendre les nuances de cette langue visuelle et gestuelle.
+      </p>
+      <h3 class="text-2xl font-semibold text-green-600 mb-4">Pourquoi ce projet ?</h3>
+      <p class="text-justify text-gray-700 leading-relaxed mb-6">
+        La Langue des Signes est un moyen de communication essentiel pour de nombreuses personnes malentendantes. Pourtant, elle reste sous-étudiée et souvent mal comprise par ceux qui ne l'utilisent pas au quotidien. En centralisant les données et en offrant une interface intuitive, nous espérons contribuer à une meilleure compréhension de cette langue et à une plus grande reconnaissance de son importance dans la société.
+      </p>
+      <h3 class="text-2xl font-semibold text-green-600 mb-4">Ce que vous pouvez faire sur notre plateforme</h3>
+      <ul class="list-disc list-inside text-gray-700 leading-relaxed mb-6">
+        <li>Rechercher des signes spécifiques et des expressions en Langue des Signes.</li>
+        <li>Visualiser des vidéos en 3D et analyser des gestes précis.</li>
+        <li>Consulter des statistiques sur les signes, leur fréquence d'apparition, ainsi que des informations démographiques associées.</li>
+        <li>Interagir avec une base de données d’annotations et de clips vidéos pour enrichir vos recherches.</li>
+      </ul>
+      <h3 class="text-2xl font-semibold text-green-600 mb-4">Technologie utilisée</h3>
+      <p class="text-justify text-gray-700 leading-relaxed mb-6">
+        Le projet repose sur des technologies de pointe telles que PostgreSQL pour la gestion de la base de données, SQLAlchemy pour la gestion des modèles de données, ainsi que des outils d’analyse vidéo comme MediaPipe pour la capture des gestes en 3D. Nous utilisons également FastAPI pour le développement du backend et HTML, TailwindCSS  pour le développement du frontend qui permettant une expérience utilisateur fluide et rapide.
+      </p>
+      <h3 class="text-2xl font-semibold text-green-600 mb-4">Rejoignez-nous</h3>
+      <p class="text-justify text-gray-700 leading-relaxed mb-6">
+        Si vous êtes intéressé par la Langue des Signes, la recherche linguistique, ou les technologies de traitement vidéo, n'hésitez pas à explorer notre plateforme. Nous sommes toujours ouverts à de nouvelles collaborations, suggestions et contributions pour améliorer notre projet.
+      </p>
+      <p class="text-justify text-gray-700 leading-relaxed mb-8">
+        Pour toute question ou commentaire, vous pouvez nous contacter à
+        <strong>jerome.fink@unamur.be</strong> ou <strong>pierre.poitier@unamur.be</strong>.
+      </p>
+      <!-- Bouton retour vers la page d'accueil corrigé -->
+      <a href="/index.html" class="inline-block bg-green-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-700 transition">
+        Retour à l'accueil
+      </a>
+    </div>
+  </div>
+
+  <!-- Pied de page -->
+  <footer class="bg-white py-4 text-center text-sm text-gray-600 shadow-inner">
+    <p>&copy; 2025 LSFB. Tous droits réservés.</p>
+  </footer>
+  
+
+  <!-- Script JS pour le menu mobile -->
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuToggle.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+  </script>
+</body>
+</html>

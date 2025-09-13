@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact</title>
+  <!-- Favicon -->
+  <link rel="icon" href="{{ url_for('static', path='images/favicon.jpeg') }}" type="image/x-icon">
+  <!-- Google Fonts : Noto Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Styles personnalisés -->
+  <style>
+    body {
+      font-family: 'Noto Sans', sans-serif;
+    }
+    /* Masquer par défaut les modals */
+    .modal { display: none; }
+    .modal:target { display: flex; }
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+    .modal-content {
+      max-width: 90%;
+      max-height: 90%;
+      position: relative;
+    }
+    .close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      color: white;
+      font-size: 2rem;
+      text-decoration: none;
+      z-index: 51;
+    }
+    .modal:target body { overflow: hidden; }
+  </style>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+  <!-- Ligne texte en haut -->
+  <div class="bg-green-600 text-white text-center py-3 text-sm font-semibold uppercase">
+    Langue des Signes Francophone de Belgique
+  </div>
+
+  <!-- Barre de navigation -->
+  <nav class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <!-- Logo/Brand -->
+      <a class="text-2xl font-bold text-green-600 hover:text-green-700 transition-colors duration-300" href="/index.html">
+        LSFB Dashboard
+      </a>
+      <!-- Menu -->
+      <ul class="flex space-x-4">
+        <li><a class="font-semibold text-gray-800 hover:text-green-600 transition-colors duration-300" href="/about.html">À Propos</a></li>
+        <li><a class="font-semibold text-gray-800 hover:text-green-600 transition-colors duration-300" href="/lsfb.html">LSFB</a></li>
+        <li><a class="font-semibold text-gray-800 hover:text-green-600 transition-colors duration-300" href="/suggestions.html">Suggestions</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Contenu principal -->
+  <main class="max-w-5xl mx-auto my-8 p-8 bg-white shadow-lg rounded-xl flex-1 transition-transform duration-300 hover:-translate-y-1">
+    <h2 class="text-3xl font-bold text-green-600 mb-6">Contactez-nous</h2>
+    <p class="mb-6">
+      Vous avez des questions, des commentaires ou des suggestions ? N'hésitez pas à contacter l'une des personnes suivantes pour plus d'informations sur le projet LSFB :
+    </p>
+    <!-- Bloc Contact 1 -->
+    <div class="flex items-center mb-8 bg-white border border-gray-200 rounded-xl shadow-md p-6 transition-transform duration-300 hover:-translate-y-1">
+      <a href="#modal-jerome" class="mr-6">
+        <img src="{{ url_for('static', path='images/jerome.jpeg') }}" alt="Jérôme Fink" class="w-24 h-24 object-cover rounded-full transition-transform duration-300 hover:scale-110" />
+      </a>
+      <div>
+        <h4 class="text-xl font-semibold text-green-600">Jérôme FINK</h4>
+        <p class="text-gray-700 text-base mt-1">Email : <a href="mailto:jerome.fink@unamur.be" class="text-blue-600 underline hover:text-blue-800">jerome.fink@unamur.be</a></p>
+        <p class="text-gray-700 text-base">Faculté : Informatique</p>
+        <p class="text-gray-700 text-base">Fonction : Assistant</p>
+        <p class="text-gray-700 text-base">LinkedIn : <a href="https://www.linkedin.com/in/j%C3%A9r%C3%B4me-fink-230a55b1/" class="text-blue-600 underline hover:text-blue-800">Profil LinkedIn</a></p>
+        <p class="italic text-sm text-gray-600 mt-2">Domaines d'expertise : Machine Learning / Intelligence artificielle, Reconnaissance de gestes, Bases de données</p>
+      </div>
+    </div>
+    <!-- Modal pour Jérôme -->
+    <div id="modal-jerome" class="modal">
+      <div class="modal-overlay w-full h-full modal-overlay">
+        <a href="#" class="close-btn">&times;</a>
+        <img src="{{ url_for('static', path='images/jerome.jpeg') }}" alt="Jérôme Fink" class="modal-content rounded shadow-lg" />
+      </div>
+    </div>
+    <!-- Bloc Contact 2 -->
+    <div class="flex items-center mb-8 bg-white border border-gray-200 rounded-xl shadow-md p-6 transition-transform duration-300 hover:-translate-y-1">
+      <a href="#modal-pierre" class="mr-6">
+        <img src="{{ url_for('static', path='images/photo2.jpg') }}" alt="Pierre Poitier" class="w-24 h-24 object-cover rounded-full transition-transform duration-300 hover:scale-110" />
+      </a>
+      <div>
+        <h4 class="text-xl font-semibold text-green-600">Pierre POITIER</h4>
+        <p class="text-gray-700 text-base mt-1">Email : <a href="mailto:pierre.poitier@unamur.be" class="text-blue-600 underline hover:text-blue-800">pierre.poitier@unamur.be</a></p>
+        <p class="text-gray-700 text-base">Faculté : Informatique</p>
+        <p class="text-gray-700 text-base">Fonction : Chercheur</p>
+        <p class="text-gray-700 text-base">LinkedIn : <a href="lien linkedln" class="text-blue-600 underline hover:text-blue-800">Profil LinkedIn</a></p>
+        <p class="italic text-sm text-gray-600 mt-2">Domaines d'expertise :</p>
+      </div>
+    </div>
+    <!-- Modal pour Pierre -->
+    <div id="modal-pierre" class="modal">
+      <div class="modal-overlay w-full h-full modal-overlay">
+        <a href="#" class="close-btn">&times;</a>
+        <img src="{{ url_for('static', path='images/photo2.jpg') }}" alt="Pierre Poitier" class="modal-content rounded shadow-lg" />
+      </div>
+    </div>
+    <!-- Bloc Contact 3 -->
+    <div class="flex items-center mb-8 bg-white border border-gray-200 rounded-xl shadow-md p-6 transition-transform duration-300 hover:-translate-y-1">
+      <a href="#modal-vincent" class="mr-6">
+        <img src="{{ url_for('static', path='images/vincent.jpeg') }}" alt="Vincent Englebert" class="w-24 h-24 object-cover rounded-full transition-transform duration-300 hover:scale-110" />
+      </a>
+      <div>
+        <h4 class="text-xl font-semibold text-green-600">Vincent Englebert</h4>
+        <p class="text-gray-700 text-base mt-1">Email : <a href="mailto:vincent.englebert@unamur.be" class="text-blue-600 underline hover:text-blue-800">vincent.englebert@unamur.be</a></p>
+        <p class="text-gray-700 text-base">Faculté : Informatique</p>
+        <p class="text-gray-700 text-base">Fonction : Professeur</p>
+        <p class="text-gray-700 text-base">LinkedIn : <a href="https://be.linkedin.com/in/vincentenglebert" class="text-blue-600 underline hover:text-blue-800">Profil LinkedIn</a></p>
+        <p class="italic text-sm text-gray-600 mt-2">
+          Domaines d'expertise : Ingénierie des langages de modélisation, Modélisation & Méta-modélisation, Ingénierie des architectures logicielles, Informatique et vieillissement
+        </p>
+      </div>
+    </div>
+    <!-- Modal pour Vincent -->
+    <div id="modal-vincent" class="modal">
+      <div class="modal-overlay w-full h-full modal-overlay">
+        <a href="#" class="close-btn">&times;</a>
+        <img src="{{ url_for('static', path='images/vincent.jpeg') }}" alt="Vincent Englebert" class="modal-content rounded shadow-lg" />
+      </div>
+    </div>
+    <!-- Bloc Contact 4 -->
+    <div class="flex items-center mb-8 bg-white border border-gray-200 rounded-xl shadow-md p-6 transition-transform duration-300 hover:-translate-y-1">
+      <a href="#modal-loic" class="mr-6">
+        <img src="{{ url_for('static', path='images/loic.jpg') }}" alt="KAMGAIN MEUPIAP Loïc" class="w-24 h-24 object-cover rounded-full transition-transform duration-300 hover:scale-110" />
+      </a>
+      <div>
+        <h4 class="text-xl font-semibold text-green-600">KAMGAIN MEUPIAP Loïc</h4>
+        <p class="text-gray-700 text-base mt-1">Email : <a href="mailto:loic.kamgain@student.unamur.be" class="text-blue-600 underline hover:text-blue-800">loic.kamgain@student.unamur.be</a></p>
+        <p class="text-gray-700 text-base">Faculté : Informatique</p>
+        <p class="text-gray-700 text-base">Fonction : Étudiant</p>
+        <p class="text-gray-700 text-base">LinkedIn : <a href="https://www.linkedin.com/in/lo%C3%AFc-franck-kamgain-meupiap-40a4181bb" class="text-blue-600 underline hover:text-blue-800">Profil LinkedIn</a></p>
+        <p class="italic text-sm text-gray-600 mt-2">Domaines d'expertise : Python, Développement web (backend & frontend), Apprentissage du Machine Learning</p>
+      </div>
+    </div>
+    <!-- Modal pour Loïc -->
+    <div id="modal-loic" class="modal">
+      <div class="modal-overlay w-full h-full modal-overlay">
+        <a href="#" class="close-btn">&times;</a>
+        <img src="{{ url_for('static', path='images/loic.jpg') }}" alt="KAMGAIN MEUPIAP Loïc" class="modal-content rounded shadow-lg" />
+      </div>
+    </div>
+    <!-- Bouton de retour à l'accueil ajouté -->
+    <div class="text-center mt-6">
+      <a href="/index.html" class="inline-block bg-green-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-700 transition">
+        Retour à l'accueil
+      </a>
+    </div>
+  </main>
+
+  <!-- Pied de page -->
+  <footer class="bg-white py-4 text-center text-sm text-gray-600 shadow-inner">
+    <p>&copy; 2025 LSFB. Tous droits réservés.</p>
+  </footer>
+</body>
+</html>

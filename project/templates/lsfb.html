@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!-- Métadonnées de base -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Recherche Vidéo - LSFB Dashboard</title>
+
+  <!-- Favicon (icône dans l’onglet du navigateur) -->
+  <link rel="icon" href="{{ url_for('static', path='images/favicon.jpeg') }}" type="image/x-icon">
+
+  <!-- Police Google Noto Sans pour uniformité visuelle -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Chargement de Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Style personnalisé -->
+  <style>
+    :root {
+      --primary-green: rgb(85, 171, 38); /* couleur principale de ton thème */
+      --light-gray: #f8f9fa; /* fond clair */
+    }
+
+    body {
+      font-family: 'Noto Sans', "Helvetica Neue", Helvetica, sans-serif;
+      background-color: var(--light-gray);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-size: 18px;
+      opacity: 0; /* animation de transition */
+      animation: fadeIn 1s forwards;
+    }
+
+    /* Animation d’apparition en fondu */
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Bandeau supérieur avec titre -->
+  <div class="bg-green-600 text-white text-center py-3 text-sm font-semibold uppercase">
+    Langue des Signes Francophone de Belgique
+  </div>
+
+  <!-- Barre de navigation principale -->
+  <nav class="bg-white shadow-md py-3">
+    <div class="container mx-auto flex justify-between items-center px-4">
+      <!-- Logo / Slogan -->
+      <a class="text-2xl font-extrabold text-green-600" href="/index.html">
+        Langue des signes, langue vivante
+      </a>
+      <!-- Liens de navigation -->
+      <div class="hidden md:flex space-x-6">
+        <a class="text-gray-700 font-semibold hover:text-green-600" href="/about.html">À Propos</a>
+        <a class="text-gray-700 font-semibold hover:text-green-600" href="/suggestions.html">Suggestions</a>
+        <a class="text-gray-700 font-semibold hover:text-green-600" href="/contact.html">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Section principale avec deux colonnes -->
+  <div class="container mx-auto px-4 py-6 flex flex-row gap-6">
+
+    <!-- Colonne gauche : Vidéo "publicitaire" (1/5 de largeur) -->
+    <!-- Colonne Vidéo (1/5) -->
+    <div class="w-2/5 min-h-[480px] bg-white rounded shadow-sm flex justify-center items-center overflow-hidden">
+      <video
+        class="w-full h-full object-contain"
+        autoplay
+        loop
+        muted
+        playsinline
+        disablepictureinpicture
+        controlslist="nodownload nofullscreen noremoteplayback"
+      >
+      <source src="{{ url_for('static', path='videos/lsfb_intro.mp4') }}" type="video/mp4">
+      Votre navigateur ne supporte pas la vidéo.
+      </video>
+    </div>
+
+
+    <!-- Colonne droite : Formulaire de recherche (4/5 de largeur) -->
+    <div class="w-3/5 min-h-[480px] bg-white p-6 rounded shadow-sm flex flex-col items-center justify-center">
+      <h1 class="text-4xl font-extrabold text-green-600 mb-6">Recherche Vidéo</h1>
+
+      <!-- Champ de recherche -->
+      <label for="searchTerm" class="block mb-2 font-semibold text-gray-700">Terme à rechercher :</label>
+      <input
+        type="text"
+        id="searchTerm"
+        placeholder="Entrez un terme à rechercher..."
+        class="p-3 border border-gray-300 rounded-lg w-full max-w-xl mb-4"
+        aria-label="Champ de recherche de termes en Langue des Signes Francophone de Belgique"
+      >
+
+      <!-- Choix du dataset (cont ou isol) -->
+      <div class="mb-4 flex gap-6">
+        <div>
+          <input type="radio" id="contRadio" name="searchType" value="cont" class="mr-1">
+          <label for="contRadio" class="text-gray-700 font-medium">Dataset Continue</label>
+        </div>
+        <div>
+          <input type="radio" id="isolRadio" name="searchType" value="isol" class="mr-1">
+          <label for="isolRadio" class="text-gray-700 font-medium">Dataset Isolé</label>
+        </div>
+      </div>
+
+      <!-- Bouton de lancement de la recherche -->
+      <button
+        id="searchBtn"
+        onclick="searchVideo()"
+        class="bg-green-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-700 transition"
+      >
+        Rechercher
+      </button>
+
+      <!-- Zone de message d'erreur -->
+      <div id="errorMessage" class="text-red-600 font-bold mt-4"></div>
+    </div>
+  </div>
+
+  <!-- Boutons fixes en bas de page -->
+  <div class="fixed left-0 right-0 bottom-4 px-6 flex justify-between z-50">
+    <!-- Retour à l'accueil -->
+    <a href="/index.html" class="bg-green-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-700 transition">
+      Retour à l'accueil
+    </a>
+    <!-- Accès aux statistiques -->
+    <a href="/statistics.html" class="bg-green-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-700 transition">
+      Statistiques
+    </a>
+  </div>
+
+  <!-- Pied de page -->
+  <footer class="bg-white py-4 text-center text-sm text-gray-600 shadow-inner mt-auto">
+    <p>&copy; 2025 LSFB. Tous droits réservés.</p>
+  </footer>
+
+  <!-- Script JS pour la redirection de recherche -->
+  <script>
+    function searchVideo() {
+      const searchTerm = document.getElementById("searchTerm").value.trim();
+      const searchType = document.querySelector('input[name="searchType"]:checked');
+      const errorMessage = document.getElementById("errorMessage");
+
+      // Réinitialiser les messages
+      errorMessage.textContent = "";
+
+      // Validation du champ de recherche
+      if (!searchTerm) {
+        errorMessage.textContent = "Veuillez entrer un terme de recherche.";
+        return;
+      }
+
+      // Validation du type de dataset
+      if (!searchType) {
+        errorMessage.textContent = "Veuillez sélectionner un type de recherche.";
+        return;
+      }
+
+      // Redirection vers la page de résultats appropriée
+      const dataset = searchType.value;
+      const url = dataset === "cont"
+        ? `/results_cont?term=${encodeURIComponent(searchTerm)}&submitType=search`
+        : `/results_isol?term=${encodeURIComponent(searchTerm)}&submitType=search`;
+
+      window.location.href = url;
+    }
+  </script>
+</body>
+</html>

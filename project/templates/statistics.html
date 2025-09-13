@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Statistiques LSFB</title>
+  <!-- Favicon -->
+  <link rel="icon" href="{{ url_for('static', path='images/favicon.jpeg') }}" type="image/x-icon">
+  <!-- Google Fonts pour Noto Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- import de Chart Js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --primary-green: rgb(85, 171, 38);
+      --light-gray: #f8f9fa;
+    }
+    body {
+      font-family: 'Noto Sans', "Helvetica Neue", Helvetica, sans-serif;
+      background-color: var(--light-gray);
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <header class="bg-gradient-to-r from-green-600 to-green-500 text-white text-center py-4">
+    <h1 class="text-3xl font-extrabold">Statistiques - LSFB Dashboard</h1>
+  </header>
+
+  <nav class="bg-white shadow-md py-3">
+    <div class="container mx-auto flex justify-between items-center px-4">
+      <a class="text-2xl font-extrabold text-green-600 text-center" href="/index.html">Langue des signes, langue vivante</a>
+    </div>
+  </nav>
+
+  <main class="flex-1 container mx-auto py-8 px-4 space-y-10">
+    <section class="bg-white shadow-lg rounded-lg p-6">
+      <h2 class="text-2xl font-semibold text-green-600 mb-4">Statistiques Générales</h2>
+      <p class="text-gray-700 mb-4">
+        Données fournirssant un résumé statistique général des bases de données: CONT et ISOL.<br>
+        Les valeurs comme "Clips moyens par gloss" sont déjà arrondies par défaut (floor) côté backend.
+      </p>
+      <div class="overflow-x-auto bg-white shadow rounded-lg p-4">
+        <table class="min-w-full text-left text-gray-700">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="py-3 px-4 font-semibold">Statistique</th>
+              <th class="py-3 px-4 font-semibold">CONT</th>
+              <th class="py-3 px-4 font-semibold">ISOL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Clips totaux -->
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-2 px-4">Clips totaux</td>
+              <td class="py-2 px-4" id="total_clips_cont">—</td>
+              <td class="py-2 px-4" id="total_clips_isol">—</td>
+            </tr>
+            <!-- Glosses totaux -->
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-2 px-4">Glosses totaux</td>
+              <td class="py-2 px-4" id="total_glosses_cont">—</td>
+              <td class="py-2 px-4" id="total_glosses_isol">—</td>
+            </tr>
+            <!-- Signers totaux -->
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-2 px-4">Signers totaux</td>
+              <td class="py-2 px-4" id="total_signers_cont">—</td>
+              <td class="py-2 px-4" id="total_signers_isol">—</td>
+            </tr>
+            <!-- Durée moyenne d'un clip -->
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-2 px-4">Durée moyenne d'un clip (ms)</td>
+              <td class="py-2 px-4" id="avg_clip_duration_cont">—</td>
+              <td class="py-2 px-4" id="avg_clip_duration_isol">—</td>
+            </tr>
+            <!-- Clips moyens par gloss -->
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-2 px-4">Clips moyens par gloss</td>
+              <td class="py-2 px-4" id="avg_clips_per_gloss_cont">—</td>
+              <td class="py-2 px-4" id="avg_clips_per_gloss_isol">—</td>
+            </tr>
+            <!-- Gloss moyens par vidéo -->
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+              <td class="py-2 px-4">Gloss moyens par vidéo</td>
+              <td class="py-2 px-4" id="avg_glosses_per_video_cont">—</td>
+              <td class="py-2 px-4" id="avg_glosses_per_video_isol">—</td>
+            </tr>
+            <!-- Phrases moyennes par vidéo (CONT) -->
+            <tr class="hover:bg-gray-50">
+              <td class="py-2 px-4">Phrases moyennes par vidéo (CONT)</td>
+              <td class="py-2 px-4" id="avg_phrases_per_video_cont">—</td>
+              <td class="py-2 px-4">N/A</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 2) Informations sur les vidéos -->
+    <section class="bg-white shadow-lg rounded-lg p-6">
+      <h2 class="text-2xl font-semibold text-green-600 mb-4">Informations sur les vidéos</h2>
+      <p class="text-gray-700 mb-4">
+        Données fournirssant des informations détaillées pour chaque instance de vidéo CONT.<br>
+        Tapez un identifiant pour lancer la recherche.
+      </p>
+      <div class="bg-white shadow rounded-lg p-4 space-y-2">
+        <div class="flex items-center gap-2">
+          <input
+            type="text"
+            id="videoSearch"
+            placeholder="Entrez un ID de vidéo..."
+            class="border border-gray-300 px-3 py-2 rounded w-full"
+          />
+          <button
+            id="searchVideoBtn"
+            class="bg-green-600 text-white px-4 py-2 rounded"
+          >
+            Rechercher
+          </button>
+        </div>
+      </div>
+      <!-- Liste des vidéos affichées dynamiquement -->
+      <ul id="videos_info" class="bg-white shadow rounded-lg p-4 space-y-2 mt-2">
+        <li id="videoDefaultMessage" class="text-gray-500 italic">Tapez un identifiant de vidéo pour lancer la recherche.</li>
+      </ul> 
+    </section>
+
+    <!-- 3) Fréquence des Glosses (RECHERCHE) -->
+    <section class="bg-white shadow-lg rounded-lg p-6">
+      <h2 class="text-2xl font-semibold text-green-600 mb-4">Fréquence des Glosses</h2>
+      <p class="text-gray-700 mb-4">
+        Données donnant la fréquence de tous les glosses annotés dans CONT..<br>
+        Tapez un terme pour lancer la recherche.
+      </p>
+      <div class="bg-white shadow rounded-lg p-4 space-y-2">
+        <div class="flex items-center gap-2">
+          <input
+            type="text"
+            id="glossSearch"
+            placeholder="Entrez un gloss..."
+            class="border border-gray-300 px-3 py-2 rounded w-full"
+          />
+          <button
+            id="searchGlossBtn"
+            class="bg-green-600 text-white px-4 py-2 rounded"
+          >
+            Rechercher
+          </button>
+        </div>
+      </div>
+      <!-- Liste des glosses affichés dynamiquement -->
+      <ul id="gloss_frequency" class="bg-white shadow rounded-lg p-4 space-y-2 mt-2">
+        <li id="glossDefaultMessage" class="text-gray-500 italic">Tapez un terme pour lancer la recherche.</li>
+      </ul>  
+    </section>
+
+    <!-- 4) Variabilité des Signers (RECHERCHE EXACTE) -->  
+    <section class="bg-white shadow-lg rounded-lg p-6">
+      <h2 class="text-2xl font-semibold text-green-600 mb-4">Variabilité des Signers</h2>
+      <p class="text-gray-700 mb-4">
+        Données mesurerant la variabilité des glosses signés par chaque signer.</code>.<br>
+        <strong>Recherche exacte, insensible à la casse (ex. "12" si la BD stocke 12).</strong><br>
+        Tapez un identifiant pour lancer la recherche.
+      </p>
+      <div class="bg-white shadow rounded-lg p-4 space-y-2">
+        <div class="flex items-center gap-2">
+          <input
+            type="text"
+            id="signerSearch"
+            placeholder="Entrez un signer..."
+            class="border border-gray-300 px-3 py-2 rounded w-full"
+          />
+          <button
+            id="searchSignerBtn"
+            class="bg-green-600 text-white px-4 py-2 rounded"
+          >
+            Rechercher
+          </button>
+        </div>
+      </div>
+      <!-- Liste des signers affichés dynamiquement -->
+      <ul id="signers_variability" class="bg-white shadow rounded-lg p-4 space-y-2 mt-2">
+        <li id="signersDefaultMessage" class="text-gray-500 italic">Tapez un identifiant signer pour lancer la recherche.</li>
+      </ul>
+    </section>
+
+    <!-- 5) Distribution des Poses -->
+    <section class="bg-white shadow-lg rounded-lg p-6">
+      <h2 class="text-2xl font-semibold text-green-600 mb-4">Distribution des Poses</h2>
+      <p class="text-gray-700 mb-4">
+        Données issues de la distribution des poses détectées par partie du corps.
+      </p>
+      <ul id="poses_distribution" class="bg-white shadow rounded-lg p-4 space-y-2"></ul>
+    </section>
+
+    <!-- 6) Histogrammes dynamiques -->
+    <section class="bg-white shadow-lg rounded-lg p-6">
+      <h2 class="text-2xl font-semibold text-green-600 mb-4">Histogrammes Dynamiques des mots et expressions les plus utilisés dans le dataset</h2>
+      <div class="mb-10 border-[3px] border-gray-400 rounded-2xl p-6 shadow-lg bg-white">
+        <h3 class="text-xl font-semibold text-gray-700 mb-2">Top N Glosses</h3>
+        <div class="mb-4 flex items-center gap-2">
+          <label for="topGlossesSelect" class="text-gray-700 font-medium">Afficher top N glosses :</label>
+          <input id="topGlossesSelect" type="number" min="5" max="20" value="10"
+            class="border rounded px-2 py-1 w-24 text-center">
+        </div>
+        <ul>
+          <canvas id="topGlossesCanvas" width="400" height="200"></canvas>
+        </ul>
+      </div>
+
+      <div class="mt-8 border-[3px] border-gray-400 rounded-2xl p-6 shadow-lg bg-white">
+        <h3 class="text-xl font-semibold text-gray-700 mb-2">Top N Expressions</h3>
+        <div class="mb-4 flex items-center gap-2">
+          <label for="topSubtitlesSelect" class="text-gray-700 font-medium">Afficher top N expressions :</label>
+          <input id="topSubtitlesSelect" type="number" min="5" max="20" value="10"
+            class="border rounded px-2 py-1 w-24 text-center">
+        </div>
+        <ul>
+          <canvas id="topSubtitlesCanvas" width="400" height="200"></canvas>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <div class="fixed right-4 bottom-4">
+    <a href="/lsfb.html" class="bg-green-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-green-700 transition">
+      Retour
+    </a>
+  </div>
+
+  <footer class="bg-white py-4 text-center text-sm text-gray-600 shadow-inner">
+    &copy; 2025 LSFB. Tous droits réservés.
+  </footer>
+
+  <script src="{{ url_for('static', path='js/stats.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <!-- Métadonnées de base -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Résultats ISOL</title>
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', path='images/favicon.jpeg') }}" type="image/x-icon">
+  <!-- Google Fonts pour Noto Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Styles personnalisés -->
+  <style>
+      :root {
+        --primary-green: rgb(85, 171, 38);
+        --light-gray: #f8f9fa;
+      }
+      body {
+        font-family: 'Noto Sans', "Helvetica Neue", Helvetica, sans-serif;
+        background-color: var(--light-gray);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        font-size: 18px;
+        opacity: 0;
+        animation: fadeIn 1s forwards;
+      }
+      @keyframes fadeIn {
+        to { opacity: 1; }
+      }
+  </style>
+  </head>
+  
+  <body>
+    <!-- En-tête de la page -->
+    <header class="bg-white shadow p-4 mb-4">
+      <h1 class="text-3xl font-bold text-green-600">Résultats du dataset isolé pour «{{ term }}»</h1>
+    </header>
+    
+    <!-- Conteneur principal -->
+    <main class="max-w-6xl mx-auto px-4 space-y-6 flex-1">
+      
+      <!-- FORMULAIRE GLOBAL -->
+      <form action="/results_isol" method="get" class="bg-white p-4 rounded shadow">
+        <input type="hidden" name="submitType" value="search">
+        <input type="hidden" name="page" value="1">
+        <!-- Barre de recherche et bouton "Rechercher" -->
+        <div class="mb-4">
+          <label class="block font-semibold mb-1" for="term">
+            Recherche :
+          </label>
+          <div class="flex items-end gap-2">
+            <!-- Champ de saisie pour le terme de recherche -->
+            <input
+              type="text"
+              name="term"
+              id="term"
+              value="{{ term | default('') }}"
+              placeholder="Mot/phrase..."
+              class="border border-gray-300 px-3 py-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+            <!-- Bouton dédié à la recherche -->
+            <button
+              type="submit"
+              name="submitType"
+              value="search"
+              class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
+            >
+              Rechercher
+            </button>
+          </div>
+        </div>
+        
+        <!-- Filtres sur une ligne -->
+        <div class="flex flex-nowrap items-end gap-4 overflow-x-auto border-t pt-4 mt-2" style="min-height:5rem;">
+          
+          <!-- Filtre par signataire -->
+          <div class="flex flex-col">
+            <label class="font-semibold mb-1" for="signer">
+              Signataire :
+            </label>
+            <input
+              type="text"
+              name="signer"
+              id="signer"
+              value="{{ signer or '' }}"
+              placeholder="ex: 200"
+              class="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+          </div>
+          
+          <!-- Filtre par durée minimale (valeur en entier) -->
+          <div class="flex flex-col">
+            <label class="font-semibold mb-1" for="min_duration">
+              Durée min :
+            </label>
+            <input
+              type="number"
+              step="1"
+              name="min_duration"
+              id="min_duration"
+              value="{{ min_duration if min_duration is not none else '' }}"
+              placeholder="en millisecondes"
+              class="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+          </div>
+          
+          <!-- Filtre par durée maximale (valeur en entier) -->
+          <div class="flex flex-col">
+            <label class="font-semibold mb-1" for="max_duration">
+              Durée max :
+            </label>
+            <input
+              type="number"
+              step="1"
+              name="max_duration"
+              id="max_duration"
+              value="{{ max_duration if max_duration is not none else '' }}"
+              placeholder="en millisecondes"
+              class="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+          </div>
+          <!-- Bouton "Filtrer" -->
+          <div class="pt-6">
+            <button
+              type="submit"
+              name="submitType"
+              value="filter"
+              class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition-colors"
+            >
+              Filtrer
+            </button>
+          </div>
+        </div>
+      </form>
+      
+      <!-- Section des statistiques (affichée uniquement si la variable "stats" contient des données) -->
+      {% if stats %}
+        <section class="bg-white p-4 rounded shadow">
+          <h2 class="text-3xl font-bold">Statistiques pour le signe "<span class="text-red-600 font-semibold mb-2">{{ stats.sign }}</span>"</h2>
+
+          <p>
+            <strong>Occurrences :</strong> {{ stats.occurrences }} 
+          </p>
+          <p>
+            <strong>Durée moyenne :</strong> {{ stats.average_duration|round(2) }} ms
+          </p>
+          <p>
+            <strong>Durée minimale :</strong> {{ stats.min_duration }} ms
+          </p>
+          <p>
+            <strong>Durée maximale :</strong> {{ stats.max_duration }} ms
+          </p>
+          <p>
+            <strong>Nombre de signataires pour ce signe:</strong> {{ stats.distinct_signers }}
+          </p>
+          <div class="mt-4">
+            <!-- Affichage d'un graphique représentant les durées -->
+            <img src="{{ stats.graph }}" alt="Histogramme des durées pour le signe {{ stats.sign }}" class="w-full h-auto rounded shadow">
+          </div>
+        </section>
+      {% endif %}
+      
+      <!-- Affichage des résultats vidéo -->
+      {% if no_results %}
+        <!-- Message affiché lorsqu'aucun résultat n'est trouvé -->
+        <div class="bg-red-100 text-red-700 p-4 rounded shadow">
+          <strong>Aucun résultat ISOL trouvé.</strong>
+        </div>
+      {% else %}
+        <!-- Liste des vidéos ISOL -->
+        <section class="bg-white shadow rounded-lg p-6">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">Vidéos du dataset idolé[ISOL]</h2>
+          <ul class="space-y-4">
+            {% for v in isol_videos %}
+              <li class="p-4 bg-gray-50 rounded shadow flex items-center justify-between">
+                <div>
+                  <span class="font-bold">Instance :</span> {{ v.instance_id }}<br>
+                  <span class="text-sm text-gray-600">
+                    Durée :
+                    {% if v.instance_iso.end and v.instance_iso.start %}
+                      {{ v.instance_iso.end - v.instance_iso.start }} ms
+                    {% else %}
+                      N/A
+                    {% endif %}
+                  </span>
+                </div>
+                <!-- Bouton de redirection pour visualiser la vidéo -->
+                <button 
+                  class="bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700"
+                  onclick="window.location.href='/video/isol/{{ v.instance_id }}?previous_term={{ term }}'"
+                >
+                  Visualiser la vidéo
+                </button>
+              </li>
+            {% endfor %}
+          </ul>
+        </section>
+      {% endif %}
+      
+      <!-- Pagination -->
+      {% if total_pages > 1 %}
+        <nav class="my-6 flex justify-center">
+          <ul class="inline-flex items-center -space-x-px">
+
+            <!-- Bouton Précédent -->
+            {% if current_page > 1 %}
+              <li>
+                <a href="?term={{ term }}&signer={{ signer or '' }}&min_duration={{ min_duration or '' }}&max_duration={{ max_duration or '' }}&page={{ current_page - 1 }}"
+                  class="px-4 py-2 border border-gray-300 bg-white text-gray-500 hover:bg-gray-100 rounded-l-lg">
+                  Précédent
+                </a>
+              </li>
+            {% endif %}
+
+            <!-- Numéros de page -->
+            {% for i in range(1, total_pages + 1) %}
+              <li>
+                <a href="?term={{ term }}&signer={{ signer or '' }}&min_duration={{ min_duration or '' }}&max_duration={{ max_duration or '' }}&page={{ i }}"
+                  class="px-4 py-2 border border-gray-300 {% if i == current_page %}bg-green-600 text-white{% else %}bg-white text-gray-500 hover:bg-gray-100{% endif %}">
+                  {{ i }}
+                </a>
+              </li>
+            {% endfor %}
+
+            <!-- Bouton Suivant -->
+            {% if current_page < total_pages %}
+              <li>
+                <a href="?term={{ term }}&signer={{ signer or '' }}&min_duration={{ min_duration or '' }}&max_duration={{ max_duration or '' }}&page={{ current_page + 1 }}"
+                  class="px-4 py-2 border border-gray-300 bg-white text-gray-500 hover:bg-gray-100 rounded-r-lg">
+                  Suivant
+                </a>
+              </li>
+            {% endif %}
+
+          </ul>
+        </nav>
+      {% endif %}
+
+    </main>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById('searchForm');
+
+        form.addEventListener('submit', function() {
+          // Forcer la réinitialisation de la pagination à 1 lors de chaque soumission
+          const pageInput = form.querySelector('input[name="page"]');
+          if(pageInput) pageInput.value = '1';
+        });
+      });
+    </script>
+    <!-- Bouton de retour en bas de page -->
+    <div class="fixed left-4 bottom-4">
+      <a href="/lsfb.html" class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition">
+        Retour
+      </a>
+    </div>
+
+    <!-- Pied de page -->
+    <footer class="bg-white py-4 text-center text-sm text-gray-600 shadow-inner">
+    <p>&copy; 2025 LSFB. Tous droits réservés.</p>
+    </footer> 
+  </body>
+</html>

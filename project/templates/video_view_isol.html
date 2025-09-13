@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Visualisation Vidéo ISOL</title>
+  <!-- Favicon -->
+  <link rel="icon" href="{{ url_for('static', path='images/favicon.jpeg') }}" type="image/x-icon">
+  <!-- Google Fonts pour Noto Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Définition des variables CSS pour les couleurs */
+    :root {
+      --primary-green: rgb(85, 171, 38);
+      --light-gray: #f8f9fa;
+    }
+    /* Styles généraux pour le body */
+    body {
+      font-family: 'Noto Sans', "Helvetica Neue", Helvetica, sans-serif;
+      background-color: var(--light-gray);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-size: 18px;
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+    }
+    /* Animation de fondu pour l'apparition de la page */
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body class="m-4">
+
+  <!-- Titre principal -->
+  <h1 class="text-2xl font-bold text-center text-gray-800 mb-8">Vidéo : {{ instance_id }}</h1>
+
+  <!-- Conteneur principal avec vidéo et animation du squelette -->
+  <div id="container" class="flex flex-col lg:flex-row gap-6">
+    <!-- Zone vidéo ISOL -->
+    <div id="video-container" class="border border-gray-300 p-4 flex-1 rounded-lg shadow-lg bg-white">
+      <video id="myVideo" class="w-full h-auto rounded-md" controls>
+        <source src="{{ video_path }}" type="video/mp4">
+        Votre navigateur ne supporte pas la lecture vidéo.
+      </video>
+    </div>
+
+    <!-- Zone animation du squelette -->
+    <div id="skeleton-container" class="border border-gray-300 p-4 flex-1 rounded-lg shadow-lg bg-white">
+      <iframe id="dashIframe" src="http://127.0.0.1:8000/dash/" class="w-full h-96 rounded-md" title="Animation du Squelette"></iframe>
+      <div id="3d-skeleton" class="w-full h-64 mt-4 bg-gray-100 rounded-md"></div>
+    </div>
+  </div>
+
+  <script>
+    const videoId = "{{ instance_id }}"; // ID de la vidéo récupéré dynamiquement
+    
+    // Fonction pour récupérer les poses depuis FastAPI
+    async function fetchPoses(video_id) {
+      try {
+        const url = `/isol_poses/${video_id}`;
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error('Erreur lors de la récupération des poses');
+        }
+
+        const data = await response.json();
+
+        if (data.pose_paths) {
+          console.log("Poses récupérées : ", data.pose_paths);
+          sendPosesToIframe(data.pose_paths);  // Envoie les poses à l'iframe Dash
+        } else {
+          console.log("Aucune pose trouvée.");
+        }
+      } catch (error) {
+        console.error("Erreur:", error);
+      }
+    }
+
+    // Fonction pour envoyer les données de poses à l'iframe Dash via postMessage
+    function sendPosesToIframe(posePaths) {
+      const iframe = document.getElementById('dashIframe');
+      iframe.contentWindow.postMessage({ type: 'pose_paths', data: posePaths }, '*');
+    }
+
+    // Charger les poses pour la vidéo actuelle
+    window.onload = function() {
+      fetchPoses(videoId);  // Appelle la fonction pour récupérer les poses
+    };
+  </script>
+
+  <!-- Bouton retour -->
+  <div class="mt-8 text-center">
+    <a href="/results_isol?term={{ previous_term|urlencode }}" class="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300 ease-in-out">
+      Retour
+    </a>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white py-4 text-center text-sm text-gray-600 shadow-inner mt-12">
+    <p>&copy; 2025 LSFB. Tous droits réservés.</p>
+  </footer>
+
+</body>
+</html>

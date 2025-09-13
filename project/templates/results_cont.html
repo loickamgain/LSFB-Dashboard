@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Résultats CONT</title>
+  <!-- Favicon -->
+  <link rel="icon" href="{{ url_for('static', path='images/favicon.jpeg') }}" type="image/x-icon">
+  <!-- Google Fonts pour Noto Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Définition des variables CSS pour les couleurs */
+    :root {
+      --primary-green: rgb(85, 171, 38);
+      --light-gray: #f8f9fa;
+    }
+    /* Styles généraux pour le body */
+    body {
+      font-family: 'Noto Sans', "Helvetica Neue", Helvetica, sans-serif;
+      background-color: var(--light-gray);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-size: 18px;
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+    }
+    /* Animation de fondu pour l'apparition de la page */
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- En-tête de la page -->
+  <header class="bg-white shadow p-4 mb-4">
+    <!-- Affichage du terme recherché -->
+    <h1 class="text-3xl font-bold text-green-600">Résultats du dataset continu pour «{{ term }}»</h1>
+  </header>
+  <!-- Conteneur principal -->
+  <main class="max-w-6xl mx-auto px-4 space-y-6 flex-1">
+    <!-- Formulaire global pour la recherche et les filtres -->
+    <form action="/results_cont" method="get" class="bg-white p-4 rounded shadow">
+      <input type="hidden" name="submitType" value="search">
+      <input type="hidden" name="page" value="1">
+      <!-- Champ de recherche et bouton "Rechercher" -->
+      <div class="mb-4">
+        <label class="block font-semibold mb-1" for="term">Recherche :</label>
+        <div class="flex items-end gap-2">
+          <input
+            type="text"
+            name="term"
+            id="term"
+            value="{{ term | default('') }}"
+            placeholder="Mot/phrase..."
+            class="border border-gray-300 px-3 py-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+          <button
+            type="submit"
+            name="submitType"
+            value="search"
+            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
+          >
+            Rechercher
+          </button>
+        </div>
+      </div>
+
+      <!-- Filtres affichés sur une ligne -->
+      <div class="flex flex-nowrap items-end gap-4 overflow-x-auto border-t pt-4 mt-2" style="min-height:5rem;">
+        <!-- Filtre pour le signataire -->
+        <div class="flex flex-col">
+          <label class="font-semibold mb-1" for="signer">Signataire :</label>
+          <input
+            type="text"
+            name="signer"
+            id="signer"
+            value="{{ signer or '' }}"
+            placeholder="ex: 102"
+            class=" w-28 border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+        </div>
+
+        <!-- Filtre pour la main (hand_type) -->
+        <div class="flex flex-col">
+          <label class="font-semibold mb-1" for="hand_type">Main :</label>
+          <select
+            name="hand_type"
+            id="hand_type"
+            class="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="" {% if not hand_type %}selected{% endif %}>Indiff.</option>
+            <option value="left" {% if hand_type == "left" %}selected{% endif %}>Gauche</option>
+            <option value="right" {% if hand_type == "right" %}selected{% endif %}>Droite</option>
+            <option value="both" {% if hand_type == "both" %}selected{% endif %}>Les deux</option>
+          </select>
+        </div>
+
+        <!-- Filtre pour le type de signe -->
+        <div class="flex flex-col">
+          <label class="font-semibold mb-1" for="sign_type">Type de signe :</label>
+          <select
+            name="sign_type"
+            id="sign_type"
+            class="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="" {% if not sign_type %}selected{% endif %}>Indiff.</option>
+            <option value="normal" {% if sign_type == "normal" %}selected{% endif %}>Normal</option>
+            <option value="special" {% if sign_type == "special" %}selected{% endif %}>Spécial</option>
+          </select>
+        </div>
+
+        <!-- Filtre pour la durée minimale -->
+        <div class="flex flex-col">
+          <label class="font-semibold mb-1" for="min_duration">Durée min :</label>
+          <input
+            type="number"
+            step="0.01"
+            name="min_duration"
+            id="min_duration"
+            value="{{ min_duration if min_duration else '' }}"
+            placeholder="en secondes"
+            class="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+        </div>
+
+        <!-- Filtre pour la durée maximale -->
+        <div class="flex flex-col">
+          <label class="font-semibold mb-1" for="max_duration">Durée max :</label>
+          <input
+            type="number"
+            step="0.01"
+            name="max_duration"
+            id="max_duration"
+            value="{{ max_duration if max_duration else '' }}"
+            placeholder="en secondes"
+            class="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+        </div>
+        <!-- Bouton "Filtrer" -->
+        <div class="pt-6">
+          <button
+            type="submit"
+            name="submitType"
+            value="filter"
+            class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition-colors"
+          >
+            Filtrer
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Affichage des statistiques si elles existent -->
+    {% if stats and stats|length > 0 %}
+      <section class="bg-white p-4 rounded shadow">
+        {% if stats.phrase_occurrences is defined %}
+          <!-- Affichage des statistiques pour une phrase -->
+          <h2 class="text-3xl font-bold text-red-600">Statistiques de l'expression</h2>
+          <p><strong>Occurrence de la phrase :</strong> {{ stats.phrase_occurrences }}</p>
+          <p><strong>Nombre de signataires distincts :</strong> {{ stats.distinct_signers }}</p>
+        {% else %}
+          <!-- Affichage des statistiques pour un mot -->
+          <h2 class="text-3xl font-bold text-red-600">Statistiques du mot</h2>
+          <p><strong>Nombre total d'apparitions dans les phrases :</strong> {{ stats.total_occurrences_in_phrases }}</p>
+          <p><strong>Nombre de phrases contenant le mot :</strong> {{ stats.number_of_phrases }}</p>
+          <p><strong>Nombre d'annotations de mots :</strong> {{ stats.word_annotations_count }}</p>
+        {% endif %}
+      </section>
+    {% endif %}
+
+    <!-- Affichage des résultats -->
+    {% if no_results %}
+      <!-- Si aucun résultat n'est trouvé, on affiche un message d'erreur -->
+      <div class="bg-red-100 text-red-700 p-4 rounded shadow mt-4">
+        <strong>Aucun résultat CONT trouvé.</strong>
+      </div>
+    {% else %}
+      <!-- Sinon, affichage de la liste des vidéos CONT -->
+      <section class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Vidéos du dataset continu[CONT]</h2>
+        <ul class="space-y-4">
+          {% for v in cont_videos %}
+          <li class="p-4 bg-gray-50 rounded shadow flex items-center justify-between">
+            <div>
+              <span class="font-bold">Instance :</span> {{ v.instance_id }}<br>
+              {# Si la durée réelle est définie, on la formate en minutes et secondes #}
+              {% if v.real_duration_s is defined %}
+                {% set total_s = v.real_duration_s|default(0) %}
+                {% set minutes = total_s // 60 %}
+                {% set seconds = total_s % 60 %}
+                <span class="text-sm text-gray-600">
+                  Durée : {{ '%02d:%02d'|format(minutes|int, seconds|int) }}
+                </span>
+              {% else %}
+                <span class="text-sm text-gray-600">
+                  Durée : N/A
+                </span>
+              {% endif %}
+            </div>
+            <!-- Bouton pour visualiser la vidéo -->
+            <button
+              class="bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700"
+              onclick="window.location.href='/video/cont/{{ v.instance_id }}?previous_term={{ term }}'"
+            >
+              Visualiser la vidéo
+            </button>
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endif %}  {# Fin du bloc if/no_results #}
+
+    {% if total_pages > 1 %}
+    <nav class="my-6 flex justify-center">
+      <ul class="inline-flex items-center -space-x-px">
+        {% if current_page > 1 %}
+          <li>
+            <a href="?term={{ term }}&signer={{ signer or '' }}&min_duration={{ min_duration or '' }}&max_duration={{ max_duration or '' }}&page={{ current_page - 1 }}"
+              class="px-4 py-2 border border-gray-300 bg-white text-gray-500 hover:bg-gray-100 rounded-l-lg">
+              Précédent
+            </a>
+          </li>
+        {% endif %}
+
+        {% for i in range(1, total_pages + 1) %}
+          <li>
+            <a href="?term={{ term }}&signer={{ signer or '' }}&min_duration={{ min_duration or '' }}&max_duration={{ max_duration or '' }}&page={{ i }}"
+              class="px-4 py-2 border border-gray-300 {% if i == current_page %}bg-green-600 text-white{% else %}bg-white text-gray-500 hover:bg-gray-100{% endif %}">
+              {{ i }}
+            </a>
+          </li>
+        {% endfor %}
+
+        {% if current_page < total_pages %}
+          <li>
+            <a href="?term={{ term }}&signer={{ signer or '' }}&min_duration={{ min_duration or '' }}&max_duration={{ max_duration or '' }}&page={{ current_page + 1 }}"
+              class="px-4 py-2 border border-gray-300 bg-white text-gray-500 hover:bg-gray-100 rounded-r-lg">
+              Suivant
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById('searchFormCont');
+    
+        form.addEventListener('submit', function() {
+            // Réinitialiser systématiquement la pagination à la page 1 lors de la soumission
+            const pageInput = form.querySelector('input[name="page"]');
+            if(pageInput) pageInput.value = '1';
+        });
+    });
+  </script>
+
+  <!-- Bouton de retour en bas de page -->
+  <div class="fixed left-4 bottom-4">
+    <a href="/lsfb.html" class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition">
+      Retour
+    </a>
+  </div>
+
+  <!-- Pied de page -->
+  <footer class="bg-white py-4 text-center text-sm text-gray-600 shadow-inner">
+    <p>&copy; 2025 LSFB. Tous droits réservés.</p>
+  </footer>
+</body>
+</html>

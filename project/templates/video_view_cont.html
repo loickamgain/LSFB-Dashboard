@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Visualisation Vidéo ISOL</title>
+  <!-- Favicon -->
+  <link rel="icon" href="{{ url_for('static', path='images/favicon.jpeg') }}" type="image/x-icon">
+  <!-- Google Fonts pour Noto Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Plotly -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    /* Définition des variables CSS pour les couleurs */
+    :root {
+      --primary-green: rgb(85, 171, 38);
+      --light-gray: #f8f9fa;
+      --soft-gray: #f1f3f5;
+      --dark-gray: #333;
+    }
+    /* Styles généraux pour le body */
+    body {
+      font-family: 'Noto Sans', "Helvetica Neue", Helvetica, sans-serif;
+      background-color: var(--light-gray);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-size: 18px;
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+    }
+    /* Animation de fondu pour l'apparition de la page */
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    /* Styles pour les sections */
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--dark-gray);
+    }
+    .section-content {
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .segment-item {
+      padding: 0.75rem;
+      background-color: var(--soft-gray);
+      border-radius: 0.5rem;
+      margin-bottom: 0.75rem;
+      font-size: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .segment-item:hover {
+      background-color: #e2e8f0; /* Légère modification de couleur au survol */
+    }
+    .segment-time {
+      color: var(--primary-green);
+      font-weight: 500;
+    }
+    .btn {
+      background-color: var(--primary-green);
+      color: white;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.5rem;
+      text-align: center;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #6dbf6e;
+    }
+  </style>
+</head>
+<body class="m-4">
+
+  <!-- Titre principal -->
+  <h1 class="text-2xl font-bold text-center text-gray-800 mb-8">Vidéo : {{ instance_id }}</h1>
+
+  <!-- Conteneur principal avec vidéo et animation du squelette -->
+  <div id="container" class="flex flex-col lg:flex-row gap-6">
+    <!-- Zone vidéo ISOL -->
+    <div id="video-container" class="border border-gray-300 p-4 flex-1 rounded-lg shadow-lg bg-white">
+      <video id="myVideo" class="w-full h-auto rounded-md" controls autoplay>
+        <source src="{{ video_path }}" type="video/mp4">
+        Votre navigateur ne supporte pas la lecture vidéo.
+      </video>
+
+      <!-- Contrôles pour afficher toute la vidéo et les segments -->
+      <div class="mt-4 space-x-2 flex justify-center">
+        <button id="btnFull" class="btn">
+          Voir toute la vidéo
+        </button>
+        <button id="btnSegments" class="btn">
+          Voir les segments
+        </button>
+        <button id="btnPrevSegment" class="btn">
+          Segment précédent
+        </button>
+        <button id="btnNextSegment" class="btn">
+          Segment suivant
+        </button>
+      </div>
+    </div>
+
+    <!-- Zone animation du squelette -->
+    <div id="skeleton-container" class="border border-gray-300 p-4 flex-1 rounded-lg shadow-lg bg-white">
+      <iframe id="dashIframe" src="http://127.0.0.1:8000/dash/" class="w-full h-96 rounded-md" title="Animation du Squelette"></iframe>
+      <div id="3d-skeleton" class="w-full h-64 mt-4 bg-gray-100 rounded-md"></div>
+    </div>    
+  </div>
+
+  <!-- Affichage des segments détectés -->
+  <div class="mt-6 section-content">
+    <h3 class="section-title">Segments détectés :</h3>
+    <ul id="segmentsList" class="list-none p-0">
+      {% for segment in segments_list %}
+        <li class="segment-item">
+          <span>Début : <span class="segment-time">{{ format_time(segment.start) }}</span></span>
+          <span>Fin : <span class="segment-time">{{ format_time(segment.end) }}</span></span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <script>
+    // Récupération des données dynamiques passées par le backend
+    const videoId = "{{ instance_id }}"; // ID de la vidéo récupéré dynamiquement
+    const previousTerm = "{{ previous_term }}"; // Terme précédent récupéré dynamiquement
+    let segments = [];  // Tableau pour stocker les segments récupérés
+    let currentSegmentIndex = 0;  // Indice du segment actuel
+      
+    // Fonction pour récupérer les segments de la vidéo
+    async function fetchSegments(video_id, previous_term = "") {
+      try {
+        const url = `/get_segments/${video_id}?previous_term=${previous_term}`;
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error('Erreur lors de la récupération des segments');
+        }
+
+        const data = await response.json();
+
+        // Vérification que les segments ont été renvoyés
+        if (data.segments_list) {
+          segments = data.segments_list;  // Stockage des segments récupérés
+          console.log(segments);
+          displaySegments(segments);  // Affichage des segments dans l'interface
+        } else {
+          console.log("Aucun segment trouvé.");
+        }
+      } catch (error) {
+        console.error("Erreur:", error);
+      }
+    }
+
+    // Fonction pour afficher les segments dans la page
+    function displaySegments(segments) {
+      let segmentsList = document.getElementById('segmentsList');
+      segmentsList.innerHTML = '';  // Réinitialise la liste avant de l'afficher
+      segments.forEach((segment, index) => {
+        let li = document.createElement('li');
+        li.classList.add('segment-item');
+        li.innerHTML = `
+          <span>Début : <span class="segment-time">${segment.start}</span></span>
+          <span>Fin : <span class="segment-time">${segment.end}</span></span>
+        `;
+        segmentsList.appendChild(li);
+      });
+    }
+
+    // Fonction pour naviguer vers le segment suivant
+    function nextSegment() {
+      if (currentSegmentIndex < segments.length - 1) {
+        currentSegmentIndex++;
+        let segment = segments[currentSegmentIndex];
+        let video = document.getElementById('myVideo');
+        video.currentTime = convertToSeconds(segment.start); // Conversion au format secondes
+        video.play();
+      }
+    }
+
+    // Fonction pour naviguer vers le segment précédent
+    function prevSegment() {
+      if (currentSegmentIndex > 0) {
+        currentSegmentIndex--;
+        let segment = segments[currentSegmentIndex];
+        let video = document.getElementById('myVideo');
+        video.currentTime = convertToSeconds(segment.start); // Conversion au format secondes
+        video.play();
+      }
+    }
+
+    // Fonction pour redémarrer la vidéo depuis le début
+    function restartVideo() {
+      let video = document.getElementById('myVideo');
+      video.currentTime = 0;
+      video.play();
+    }
+
+    // Fonction de conversion du temps au format MM:SS en secondes
+    function convertToSeconds(time) {
+      const [minutes, seconds] = time.split(':');
+      return parseInt(minutes) * 60 + parseInt(seconds);
+    }
+
+    // Fonction pour afficher les segments au démarrage
+    function init() {
+      fetchSegments(videoId, previousTerm);
+    }
+
+    // Initialisation des événements des boutons
+    document.getElementById('btnFull').addEventListener('click', restartVideo); // Voir toute la vidéo
+    document.getElementById('btnNextSegment').addEventListener('click', nextSegment); // Segment suivant
+    document.getElementById('btnPrevSegment').addEventListener('click', prevSegment); // Segment précédent
+    document.getElementById('btnSegments').addEventListener('click', function() {
+      // Voir les segments: commencer depuis le premier segment
+      if (segments.length > 0) {
+        currentSegmentIndex = 0;
+        let segment = segments[currentSegmentIndex];
+        let video = document.getElementById('myVideo');
+        video.currentTime = convertToSeconds(segment.start);
+        video.play();
+      }
+    });
+
+    // Appeler init() lorsque la page est chargée
+    init();
+  </script>
+
+  <script>
+    const videoId2 = "{{ instance_id }}"; // ID de la vidéo récupéré dynamiquement
+    
+    // Fonction pour récupérer les poses depuis FastAPI
+    async function fetchPoses(video_id) {
+      try {
+        const url = `/isol_poses/${video_id}`;
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error('Erreur lors de la récupération des poses');
+        }
+
+        const data = await response.json();
+
+        if (data.pose_paths) {
+          console.log("Poses récupérées : ", data.pose_paths);
+          sendPosesToIframe(data.pose_paths);  // Envoie les poses à l'iframe Dash
+        } else {
+          console.log("Aucune pose trouvée.");
+        }
+      } catch (error) {
+        console.error("Erreur:", error);
+      }
+    }
+
+    // Fonction pour envoyer les données de poses à l'iframe Dash via postMessage
+    function sendPosesToIframe(posePaths) {
+      const iframe = document.getElementById('dashIframe');
+      iframe.contentWindow.postMessage({ type: 'pose_paths', data: posePaths }, '*');
+    }
+
+    // Charger les poses pour la vidéo actuelle
+    window.onload = function() {
+      fetchPoses(videoId2);  // Appelle la fonction pour récupérer les poses
+    };
+  </script>
+
+  <!-- Bouton retour -->
+  <div class="mt-6 text-center">
+    <a href="/results_cont?term={{ previous_term|urlencode }}" class="btn">
+      Retour
+    </a>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white py-4 text-center text-sm text-gray-600 shadow-inner mt-12">
+    <p>&copy; 2025 LSFB. Tous droits réservés.</p>
+  </footer>
+</body>
+</html>
