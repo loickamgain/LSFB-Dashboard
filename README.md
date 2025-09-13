@@ -1,6 +1,6 @@
 # LSFB-Dashboard
-Presentation :
+# Presentation :
 Development of an interactive dashboard for exploring a representative database of French-speaking Belgian Sign Language (FSL), composed of videos, JSON annotations, and pose files (NumPy). The objective was to make this resource accessible and usable by linguists without technical expertise thanks to an intuitive interface. The project included advanced search features (by gloss, sign sequence, or full expression), 2D/3D visualization of videos and signer skeletons, and the generation of demographic and linguistic statistics (by age, region, and sign frequency). The implementation relied on SQL, Python, JavaScript, and Pyplot, with particular attention paid to ergonomics and ease of use. This project strengthened my skills in multimodal data analysis, interactive visualization, web development, and design of research-oriented linguistic tools. 
 
-# Skills: 
+## Skills: 
 PostgreSQL · Python (programming language) · Matplotlib · JavaScript · HTML · Materialize CSS Framework · Tailwind CSS · Data Visualization · Project Management · Multimedia Data Management and Integration · Data Exploration · Advanced Query Design
